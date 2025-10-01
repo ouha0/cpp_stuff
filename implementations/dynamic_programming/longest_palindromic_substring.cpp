@@ -6,9 +6,10 @@ class Solution {
 public:
   /* Construct a 2d dp boolean array, where dp[i][j] represents index i - index
    * j is a palindrome. We always need to save the largest index i - index j, to
-   * avoid searching at the end Best solution is O(1), haven't thought of that
-   * yet.
+   * avoid searching through whole dp array at the end.
    * */
+
+  // This is the standard solution that is O(N^2) time and O(N^2 space)
   std::string longestPalindrome(std::string s) {
     int n = s.length();
     std::vector<std::vector<bool>> dp(n, std::vector<bool>(n, false));
@@ -42,6 +43,49 @@ public:
       }
     }
     return s.substr(l, r - l + 1);
+  }
+};
+
+class Solution2 {
+public:
+  /* Alternative method is to use the pointer approach. For each character, we
+   * aim to construct the largest palindrome with that character as the
+   * midpoint. Note there are two cases; palindromes of odd length and even
+   * length For each character of a string, we try to construct the largest
+   * palindrome. This is O(N^2) time complexity with O(1) Space
+   * */
+
+  std::string longestPalindrome(std::string s) {
+    int res_l = 0;
+    int res_r = 0;
+
+    for (int i = 0; i < s.length(); ++i) {
+      int l = i - 1;
+      int r = i + 1;
+      while (l >= 0 && r < s.length() && s[l] == s[r]) {
+        if (r - l > res_r - res_l) {
+          res_r = r;
+          res_l = l;
+        }
+
+        l--;
+        r++;
+      }
+
+      l = i;
+      r = i + 1;
+
+      while (l >= 0 && r < s.length() && s[l] == s[r]) {
+        if (r - l > res_r - res_l) {
+          res_r = r;
+          res_l = l;
+        }
+
+        l--;
+        r++;
+      }
+    }
+    return s.substr(res_l, (res_r - res_l) + 1);
   }
 };
 
