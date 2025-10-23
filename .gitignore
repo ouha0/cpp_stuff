@@ -1,3 +1,6 @@
 learn/personal/
 *.o
 *.obj
+
+.DS_Store
+*.swp
