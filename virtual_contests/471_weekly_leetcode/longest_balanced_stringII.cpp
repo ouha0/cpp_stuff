@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <stdio.h>
 #include <string>
 #include <tuple>
@@ -53,7 +54,8 @@ public:
     }
 
     int res = 0;
-    std::unordered_map<std::tuple<std::string, int, int>, int> first;
+    // Cannot use tuples here; tuples aren't hashable
+    std::unordered_map<std::string, int> first;
 
     // Iterate over the prefix sum. Should be size N + 1
     for (int i = 0; i < prefix_sum.size(); ++i) {
@@ -61,10 +63,15 @@ public:
       int b = prefix_sum[i].b;
       int c = prefix_sum[i].c;
 
-      std::vector<std::tuple<std::string, int, int>> keys = {
-          {"ab", a - b, c}, {"abc", a - b, a - c}, {"ca", c - a, b},
-          {"bc", b - c, a}, {"a", b, c},           {"b", a, c},
-          {"c", a, b}};
+      // This is too slow
+      std::vector<std::string> keys = {
+          "ab_" + std::to_string(a - b) + "_" + std::to_string(c),
+          "abc_" + std::to_string(a - b) + "_" + std::to_string(a - c),
+          "ca_" + std::to_string(c - a) + "_" + std::to_string(b),
+          "bc_" + std::to_string(b - c) + "_" + std::to_string(a),
+          "a_" + std::to_string(b) + "_" + std::to_string(c),
+          "b_" + std::to_string(a) + "_" + std::to_string(c),
+          "c_" + std::to_string(a) + "_" + std::to_string(b)};
 
       for (const auto &key : keys) {
         // Update default to value (first time key was found) if exists
@@ -78,7 +85,58 @@ public:
 
     return res;
   }
+};
 
+class solution {
 private:
-  std::vector<std::string> cases = {"abc", "ab", "bc", "ac", "a", "b", "c"};
+  static constexpr uint64_t OFFSET = 100000;
+
+  uint64_t hash(const std::tuple<int, int, int> &k) {
+    auto [type, val1, val2] = k;
+    uint64_t u_type = static_cast<uint64_t>(type);
+    uint64_t u_val1 = static_cast<uint64_t>(val1);
+    uint64_t uval2 = static_cast<uint64_t>(val2);
+
+    return (u_type << 36) | (u_val1 << 18) | (uval2);
+  }
+
+public:
+  int longestBalanced(std::string s) {
+    std::vector<std::array<int, 3>> P;
+    P.push_back({0, 0, 0});
+
+    for (char c : s) {
+      P.push_back(P.back());
+      if (c == 'a') {
+        P.back()[0]++;
+      } else if (c == 'b') {
+        P.back()[1]++;
+      } else if (c == 'c') {
+        P.back()[2]++;
+      }
+    }
+    int ans = 0;
+    std::unordered_map<uint64_t, int> first;
+
+    for (int i = 0; i < P.size(); ++i) {
+      int a = P[i][0];
+      int b = P[i][1];
+      int c = P[i][2];
+
+      std::vector<std::tuple<int, int, int>> keys = {
+          {7, a - b, c}, {6, a - b, a - c}, {5, b - c, a}, {4, c - a, b},
+          {3, b, c},     {2, c, a},         {1, a, b}};
+
+      for (const auto &key : keys) {
+        auto it = first.find(hash(key));
+        if (it != first.end()) {
+          ans = std::max(ans, i - it->second);
+        } else {
+          first[hash(key)] = i;
+        }
+      }
+    }
+
+    return ans;
+  }
 };
