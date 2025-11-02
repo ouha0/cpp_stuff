@@ -155,3 +155,71 @@ private:
     return true;
   }
 };
+
+class dfs_cycle_Solution {
+public:
+  /* Construct */
+  std::vector<std::vector<int>> adj;
+  std::vector<bool> visit;
+  std::unordered_set<int> cycle;
+  int cycle_start;
+
+  std::vector<int>
+  findRedundantConnection(std::vector<std::vector<int>> &edges) {
+    int n = edges.size() + 1;
+    adj.resize(n + 1);
+
+    for (const auto edge : edges) {
+      adj[edge[0]].push_back(edge[1]);
+      adj[edge[1]].push_back(edge[0]);
+    }
+    visit.resize(n + 1, false);
+    cycle_start = -1;
+    dfs(1, -1);
+
+    for (int i = n - 1; i >= 0; --i) {
+      if (cycle.count(edges[i][0]) && cycle.count(edges[i][1])) {
+        return edges[i];
+      }
+    }
+
+    // shouldn't happen
+    return {};
+  }
+
+private:
+  bool dfs(int n, int parent) {
+    if (n == cycle_start) {
+      cycle_start = n;
+      return true;
+    }
+
+    visit[n] = true;
+    for (const int nei : adj[n]) {
+      if (nei == parent) {
+        continue;
+      }
+
+      /* This is the key part of the code; if a deeper part of the tree is a
+       * cycle, the entire call stack will be true. Backtracking occurs on the
+       * call stack and previous nodes along the cycle path is added to the
+       * cycle hash set, until the previous parent is the same as the cycle
+       * start node, where we reset the cycle_start to -1; meaning that every
+       * node of cycle has already been found. Nodes part of the path containing
+       * the cycle, but not part of the cycle, will be ignored; since
+       * cycle_start = -1, whihc fails both conditions within the if statement
+       * */
+      if (dfs(nei, n)) {
+        if (cycle_start != -1) {
+          cycle.insert(n);
+        }
+
+        if (cycle_start == n) {
+          cycle_start = -1;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+};
