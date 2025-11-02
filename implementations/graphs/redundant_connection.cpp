@@ -166,7 +166,7 @@ public:
 
   std::vector<int>
   findRedundantConnection(std::vector<std::vector<int>> &edges) {
-    int n = edges.size() + 1;
+    int n = edges.size();
     adj.resize(n + 1);
 
     for (const auto edge : edges) {
@@ -188,8 +188,11 @@ public:
   }
 
 private:
+  // dfs function that returns true if the path contains a cycle. By design, it
+  // will backtrack and add all nodes that are part of the cycle into the cycle
+  // hash
   bool dfs(int n, int parent) {
-    if (n == cycle_start) {
+    if (visit[n]) {
       cycle_start = n;
       return true;
     }
