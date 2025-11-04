@@ -1,3 +1,6 @@
+#include <iostream>
+#include <map>
+#include <set>
 #include <stdio.h>
 #include <string>
 #include <unordered_map>
@@ -11,13 +14,15 @@ public:
    * dfs to find all potential paths. The first valid path will be the solution,
    * since our neighbour map was sorted, so we run dfs in a sorted manner
    * */
+
+  /* Using vectors was too slow so we use multiset */
   std::vector<std::string>
   findItinerary(std::vector<std::vector<std::string>> &tickets) {
-    std::sort(tickets.begin(), tickets.end());
+    // std::sort(tickets.begin(), tickets.end());
 
-    std::unordered_map<std::string, std::vector<std::string>> nei_map;
+    std::unordered_map<std::string, std::multiset<std::string>> nei_map;
     for (const auto &ticket : tickets) {
-      nei_map[ticket[0]].emplace_back(ticket[1]);
+      nei_map[ticket[0]].insert(ticket[1]);
     }
 
     dfs("JFK", nei_map, tickets);
@@ -28,8 +33,8 @@ public:
 private:
   std::vector<std::string> res = {"JFK"};
 
-  bool dfs(std::string &&s,
-           std::unordered_map<std::string, std::vector<std::string>> &nei_map,
+  bool dfs(std::string s,
+           std::unordered_map<std::string, std::multiset<std::string>> &nei_map,
            std::vector<std::vector<std::string>> &tickets) {
     if (res.size() == tickets.size() + 1) {
       return true;
@@ -39,17 +44,24 @@ private:
       return false;
     }
 
-    std::vector<std::string> tmp = nei_map[s];
-    for (int i = 0; i < tmp.size(); ++i) {
-      std::string v = tmp[i];
-      nei_map[s].erase(nei_map[s].begin() + i);
-      res.emplace_back(v);
+    std::multiset<std::string> tmp = nei_map[s];
 
-      if (dfs(std::move(v), nei_map, tickets)) {
+    for (const std::string &curr_s : tmp) {
+      std::string copy = curr_s;
+      auto it = nei_map[s].find(curr_s);
+      if (it == nei_map[s].end()) {
+        std::cout << "Somethings wrong" << std::endl;
+      } else {
+        nei_map[s].erase(it);
+      }
+
+      res.emplace_back(curr_s);
+
+      if (dfs(copy, nei_map, tickets)) {
         return true;
       }
 
-      nei_map[s].insert(nei_map[s].begin() + i, v);
+      nei_map[s].insert(curr_s);
       res.pop_back();
     }
 
@@ -102,5 +114,43 @@ private:
     }
 
     return false;
+  }
+};
+
+class leetcode_solution_faster {
+  /* Smart solution, but kinda hard to understand. Basically, the first element
+   * to be added on the route is the position with no tickets. By design, the
+   * call stack goes in reverse order. So we just need to reverse the route
+   * to get the solution...
+   * Requires quite a strong understanding of the call stack
+   *
+   * Key insight; The right path will "deadend" at the final destination.
+   * And a location will only be added once it becomes a deadend, by the design of recursion / the call stack
+   * */
+public:
+  std::vector<std::string>
+  findItinerary(std::vector<std::vector<std::string>> &tickets) {
+    std::map<std::string, std::multiset<std::string>> targets;
+    std::vector<std::string> route;
+
+    for (const auto ticket : tickets) {
+      targets[ticket[0]].insert(ticket[1]);
+    }
+    visit("JFK", targets, route);
+
+    return std::vector<std::string>(route.rbegin(), route.rend());
+  }
+
+private:
+  void visit(std::string s,
+             std::map<std::string, std::multiset<std::string>> &targets,
+             std::vector<std::string> &route) {
+    while (targets[s].size()) {
+      std::string next = *targets[s].begin();
+      targets[s].erase(targets[s].begin());
+      visit(next, targets, route);
+    }
+
+    route.push_back(s);
   }
 };
