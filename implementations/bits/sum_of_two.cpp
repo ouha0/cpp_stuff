@@ -19,3 +19,15 @@ public:
     return a;
   }
 };
+
+class Solution_copy {
+public:
+  int getSum(int a, int b) {
+    while (b != 0) {
+      int tmp_carry = (a & b) << 1;
+      a = a ^ b;
+      b = tmp_carry;
+    }
+    return a;
+  }
+};
