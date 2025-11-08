@@ -51,3 +51,30 @@ private:
     return res;
   }
 };
+
+class optimized_dp_solution {
+public:
+  /* Optmized dp approach, where where the current state only depends on the
+   * previous state. For every key, value in dp_prev, find if key + number
+   * exists in dp_curr. if exists, add value count to it. Otherwise, create new
+   * key + number, value pair using dp_prev value. */
+  int findTargetSumWays(std::vector<int> &nums, int target) {
+    std::unordered_map<int, int> dp_prev;
+    dp_prev[0] = 1;
+
+    for (const int &num : nums) {
+      std::unordered_map<int, int> dp_curr;
+      for (const auto &[key, value] : dp_prev) {
+        // Not check is required, since if a key doesn't exists, the [] sets
+        // them to 0 first before adding value
+        dp_curr[key + num] += value;
+        dp_curr[key - num] += value;
+      }
+      dp_prev = std::move(dp_curr);
+    }
+
+    // if target doesn't exist, it would create target, 0 key value pair and
+    // return 0
+    return dp_prev[target];
+  }
+};
