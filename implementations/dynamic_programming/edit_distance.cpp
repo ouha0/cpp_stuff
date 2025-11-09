@@ -38,11 +38,59 @@ private:
     int res = std::numeric_limits<int>::max();
     if (s1[i] == s2[j]) {
       res = dfs(i + 1, j + 1, s1, s2, dp);
-      dp[i][j] = res;
     } else {
-      // save the 3 actions into results here
+      /* The key is to realise that we don't actually need to modify the string,
+       * we can "simulate" modifications by changing the indexes*/
+      int cost_replace = 1 + dfs(i + 1, j + 1, s1, s2, dp);
+      int cost_delete = 1 + dfs(i + 1, j, s1, s2, dp);
+      int cost_insert = 1 + dfs(i, j + 1, s1, s2, dp);
+      res = std::min({cost_replace, cost_delete, cost_insert});
     }
 
+    dp[i][j] = res;
     return res;
+  }
+};
+
+/* It is useful to imagine the values of the 2d cache array of dimensions
+ * s1.size() + 1 and s2.size() + 1 */
+
+class pure_dp_solution {
+public:
+  /* This is a pure dp solution, where we construct the dp 2d array, we slowly
+   * built it. if w1[i] == w2[j], then solving (i, j) is same as solving (i + 1,
+   * j + 1). if w1[i] != w2[j], we have to determine the minimum distance of the
+   * 3 possible states (replace, delete and insert operations). hence state (i,
+   * j) is 1 + minimum of other 3 states. If we delete i, it means we move onto
+   * (i + 1, j). If we replace the same value as j , it means we can move onto
+   * (i + 1, j + 1). If we insert the same value as j, it means we can move onto
+   * the (i,  j + 1) state
+   * */
+  int minDistance(std::string word1, std::string word2) {
+    const int n = word1.length();
+    const int m = word2.length();
+
+    std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1, -1));
+
+    for (int i = 0; i < n + 1; ++i) {
+      dp[i][m] = n - i;
+    }
+
+    for (int j = 0; j < m + 1; ++j) {
+      dp[n][j] = m - j;
+    }
+
+    for (int i = n - 1; i >= 0; --i) {
+      for (int j = m - 1; j >= 0; --j) {
+        if (word1[i] == word2[j]) {
+          dp[i][j] = dp[i + 1][j + 1];
+        } else {
+          dp[i][j] =
+              1 + std::min({dp[i + 1][j + 1], dp[i][j + 1], dp[i + 1][j]});
+        }
+      }
+    }
+
+    return dp[0][0];
   }
 };
