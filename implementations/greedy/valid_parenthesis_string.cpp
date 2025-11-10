@@ -50,8 +50,56 @@ public:
 
 class dp_solution {
 public:
-  bool checkValidString(std::string s) {}
+  bool checkValidString(std::string s) {
+    std::vector<std::vector<int>> dp(s.size() + 1,
+                                     std::vector<int>(s.size() + 1, -1));
+    return dfs(0, 0, s, dp);
+  }
+
+private:
+  /* dfs recursive + dp solution. Base case is when index is goes out of bounds,
+   * return whether left brackets is zero. Otherwise evaluate the potential
+   * paths*/
+  bool dfs(int i, int left_b, std::string &s,
+           std::vector<std::vector<int>> &dp) {
+    bool res;
+    if (i >= s.size()) {
+      res = left_b == 0;
+      dp[i][left_b] = res;
+      return res;
+    }
+
+    // Forgot about dp caching
+    if (dp[i][left_b] != -1) {
+      return dp[i][left_b];
+    }
+
+    if (s[i] == '(') {
+      res = dfs(i + 1, left_b + 1, s, dp);
+    } else if (s[i] == ')') {
+      // Note that if left_b becomes negative, it is false
+      if (left_b - 1 < 0) {
+        res = false;
+      } else {
+        res = dfs(i + 1, left_b - 1, s, dp);
+      }
+    } else {
+      bool as_open = dfs(i + 1, left_b + 1, s, dp);
+      bool do_nothing = dfs(i + 1, left_b, s, dp);
+      bool as_close = false;
+      // Note that we must do the check here too
+      if (left_b - 1 >= 0) {
+        as_close = dfs(i + 1, left_b - 1, s, dp);
+      }
+      res = as_open || as_close || do_nothing;
+    }
+
+    dp[i][left_b] = res;
+    return res;
+  }
 };
 
 /* Takeaways; this greedy solution is hard to get at. But a dfs / recursive
- * solution is very much still a valid solution */
+ * solution is very much still a valid solution. Always go over the base cases
+ * first for dp questions. When change indices of an array, always think about
+ * whether that entry is actually valid*/
