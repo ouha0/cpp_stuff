@@ -58,11 +58,7 @@ public:
       while (!pq.empty() && q.first > pq.top().second) {
         pq.pop();
       }
-      if (!pq.empty()) {
-        res[q.second] = pq.top().first;
-      } else {
-        res[q.second] = -1;
-      }
+      res[q.second] = pq.empty() ? -1 : pq.top().first;
     }
     return res;
   }
