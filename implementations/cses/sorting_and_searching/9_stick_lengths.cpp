@@ -18,7 +18,12 @@ const int MOD = 1e9 + 7;
 const int INF = 1e9;
 
 /* Idea is to find the median. Then iterate through the array and take the sum
- * of the absolute differences */
+ * of the absolute differences. What we want to find is a value d, s.t.
+ * the sum of the absolute values is negative. We want to find d s.t. the
+ * derivative goes from negative to positive. Since this is a sum of absolute
+ * values, we can order the sticks first, and suppose d >= p_i or something. We
+ * will find that d = the median of the sticks will give us the minimum we
+ * want*/
 int main() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(NULL);
