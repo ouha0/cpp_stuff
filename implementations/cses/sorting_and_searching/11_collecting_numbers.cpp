@@ -54,3 +54,9 @@ int main() {
 
   return 0;
 }
+
+/* Problem; didn't read the question properly. Note that we must pick the items
+ * in  order, this is a fundamental rule of the problem.
+ * when reading a question, keep a mental note of all important key points, and
+ * run through the key points when you finish reading again...
+ * */
