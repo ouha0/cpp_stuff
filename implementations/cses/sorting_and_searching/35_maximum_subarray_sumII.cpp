@@ -40,26 +40,32 @@ int main() {
   int n, a, b;
   std::cin >> n >> a >> b;
 
-  ll res = 0;
-  ll curr_sum = 0;
-  std::deque<std::pair<ll, int>> dq;
-
+  std::vector<ll> P(n + 1, 0);
   ll tmp;
   for (int i = 0; i < n; ++i) {
     std::cin >> tmp;
-    curr_sum += tmp;
+    P[i + 1] = P[i] + tmp;
+  }
 
-    if (!dq.empty() && i > dq.front().second + b) {
+  std::deque<int> dq;
+  ll res = std::numeric_limits<ll>::min();
+
+  for (int j = 1; j <= n; ++j) {
+    if (j - a >= 0) {
+      int idx = j - a;
+
+      while (!dq.empty() && P[dq.back()] >= P[idx]) {
+        dq.pop_back();
+      }
+      dq.emplace_back(idx);
+    }
+
+    if (!dq.empty() && dq.front() < j - b) {
       dq.pop_front();
     }
 
-    while (!dq.empty() && dq.back().first >= curr_sum) {
-      dq.pop_back();
-    }
-    dq.emplace_back(curr_sum, i);
-
-    if (!dq.empty() && i >= dq.front().second + a) {
-      res = std::max(res, curr_sum - dq.front().first);
+    if (!dq.empty()) {
+      res = std::max(res, P[j] - P[dq.front()]);
     }
   }
 
@@ -67,10 +73,6 @@ int main() {
 
   return 0;
 }
-
-// This code doesn't work yet. note we can't add in undefined ranges before they
-// are defined... The error was caused by, we only add valid elements into the
-// deque i.e, prefix sums with size a...
 
 /* Key insights:
  * Note the negative input -> may need to use prefix sum
@@ -80,4 +82,8 @@ int main() {
  * minimize the P[i - 1]. Keeping useful prefix arrays in order can be done
  * using a deque (fifo)
  *
+ * Again... Be careful with variable types, if numbers get very large / small,
+ * just use long long...
  * */
+
+// This questions is quite difficult, especially dealing with indices...
