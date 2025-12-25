@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <climits>
 #include <map>
 #include <queue>
 #include <set>
@@ -17,126 +18,126 @@ using ll = long long;
 const int MOD = 1e9 + 7;
 const int INF = 1e9;
 
-/* Key idea: get all the input, save positions of monsters, and starting point.
- * Then calculate a monsters bfs distance -> then do bfs on the person running
- * away. If any coordinate will be caught by some monster, it isn't valid*/
+/*
+ * Goal: Want to reach boundary, if possible, before any monster catches you.
+ * return NO if impossible, YES + the path if possible; this means that we
+ * have to save the valid path
+ *
+ * We assume the monster moves optimally, so we can do bfs on the monsters first
+ * and prepopulate the number of steps required by the monster to reach that
+ * point (given they walk optimally). A can only reach a particular position, if
+ * the steps it takes to get their is less than the monster steps. A path
+ * exists, if A is able to get to the boundary.
+ *
+ * */
 
+/* Specific implementations:
+ * Construct the grid: iterate and save the char into the grid. If A, save that
+ * as the start position. if M, add that coordinate into a queue, which we use
+ * to the minimum steps required for the monster to reach every point
+ *
+ * When doing bfs; for the monster, only reach a point if in range and not a
+ * wall (we can replace A with a number because we already saved the starting
+ * point of A). Update only if we can reach the point faster than some other
+ * monster
+ *
+ * bfs for the person, save the current number of steps, if a point is reachable
+ * (in range, reach faster than a monaster, not a wall), add to queue. Increase
+ * current steps count at each level. To reconstruct the successful path, we may
+ * need a grid that saves the information of the direction the person took
+ *
+ * */
 int main() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(NULL);
 
-  const int dirs[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-  const char moves[4] = {'D', 'U', 'R', 'L'};
   int n, m;
   std::cin >> n >> m;
 
-  std::vector<std::vector<char>> graph(n, std::vector<char>(m));
-  std::pair<int, int> start;
-  std::pair<int, int> end = {-1, -1};
-  std::vector<std::pair<int, int>> monster_positions;
+  const int dirs[4][2] = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
 
+  std::queue<std::pair<int, int>> monster_q;
+  std::queue<std::pair<int, int>> player_q;
+
+  // Construct the grid, save into monster_q, save start
+  std::vector<std::vector<char>> grid(n, std::vector<char>(m));
+  std::vector<std::vector<int>> monster_grid(n, std::vector<int>(m, INT_MAX));
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < m; ++j) {
-      // save into graph
-      char c;
-      std::cin >> c;
-      graph[i][j] = c;
+      char tmp;
+      std::cin >> tmp;
+      grid[i][j] = tmp;
 
-      // save monster and survivor start position
-      if (c == 'M') {
-        monster_positions.emplace_back(i, j);
-      } else if (c == 'A') {
-        start.first = i;
-        start.second = j;
+      if (tmp == 'M') {
+        monster_q.emplace(i, j);
+        monster_grid[i][j] = 0;
 
-        if (i == n - 1 || j == m - 1) {
+      } else if (tmp == 'A') {
+        player_q.emplace(i, j);
+
+        // If we start at boundary, we are done
+        if (i == 0 || i == n - 1 || j == 0 || j == m - 1) {
+          std::cout << "YES" << std::endl;
           return 0;
         }
       }
     }
   }
 
-  // precalculate monster graph distances by doing bfs
-  // This would be O(NM) to populate and build
-  std::vector<std::vector<int>> monster_distances(n,
-                                                  std::vector<int>(m, INT_MAX));
-  std::queue<std::pair<int, int>> monster_q;
-
-  for (const auto [x, y] : monster_positions) {
-    monster_q.emplace(x, y);
-    monster_distances[x][y] = 0;
-  }
-
+  /* Construct monster grid; fill with shortest paths */
+  std::vector<std::vector<char>> parent_dir;
   while (!monster_q.empty()) {
-    auto [x, y] = monster_q.front();
+    auto [curr_x, curr_y] = monster_q.front();
     monster_q.pop();
-    int monster_reach = monster_distances[x][y];
 
-    for (const auto [dirx, diry] : dirs) {
-      int newx = x + dirx;
-      int newy = y + diry;
+    for (const auto &dir : dirs) {
+      int nx = curr_x + dir[0];
+      int ny = curr_y + dir[1];
 
-      // If new coordinate not wall, and monster can reach coordinate faster
-      // than previous, update it
-      if (newx >= 0 && newx < n && newy >= 0 && newy < m &&
-          graph[newx][newy] != '#' &&
-          monster_distances[newx][newy] > monster_reach + 1) {
-        monster_distances[newx][newy] = monster_reach + 1;
-        monster_q.emplace(newx, newy);
+      if (nx < 0 || nx >= n || ny < 0 || ny >= m) {
+        continue;
+      }
+
+      if (monster_grid[nx][ny] == INT_MAX) {
+        monster_grid[nx][ny] = monster_grid[curr_x][curr_y] + 1;
+        monster_q.emplace(nx, ny);
       }
     }
   }
 
-  std::vector<std::vector<char>> parent(n, std::vector<char>(m));
-  std::queue<std::pair<int, int>> survivor_q;
+  /* Construct player grid */
+  int player_step = 1;
+  while (!player_q.empty()) {
 
-  survivor_q.emplace(start);
-  int depth = 0;
+    int curr_layer = player_q.size();
+    for (int i = 0; i < curr_layer; ++i) {
 
-  while (!survivor_q.empty()) {
-    int q_size = survivor_q.size();
+      auto [curr_x, curr_y] = player_q.front();
+      player_q.pop();
 
-    for (int i = 0; i < q_size; ++i) {
-      auto [x, y] = survivor_q.front();
-      survivor_q.pop();
+      for (const auto &dir : dirs) {
+        int nx = curr_x + dir[0];
+        int ny = curr_y + dir[1];
 
-      for (int d = 0; d < 4; ++d) {
-        int newx = x + dirs[d][0];
-        int newy = y + dirs[d][1];
+        // out of range move
+        if (nx < 0 || nx >= n || ny < 0 || ny >= m) {
+          continue;
+        }
 
-        if (newx >= 0 && newx < n && newy >= 0 && newy < m &&
-            graph[newx][newy] == '.' &&
-            depth + 1 < monster_distances[newx][newy]) {
+        if (grid[nx][ny] == '.' && player_step < monster_grid[nx][ny]) {
+          player_q.emplace(nx, ny);
 
-          if (newx == n - 1 || newy == m - 1) {
-            end = {newx, newy};
-            parent[newx][newy] = moves[d];
-
-            // wrong at the moment
-            // print the solution here
-            //
-
-            return 0;
-          }
-
-          survivor_q.emplace(newx, newy);
-          parent[newx][newy] = moves[d];
-          // update relative direction into parent
-          graph[newx][newy] = '#'; // mark as visited
+          // Save the direction to the parent direction
         }
       }
     }
-
-    depth++;
+    player_step++;
   }
 
   return 0;
 }
 
-/*
- *
- * (x,y) -> (x, y + 1) -> (0, 1) -> R
- * (x,y) -> (x, y - 1) -> (0, -1) -> L
- * (x,y) -> (x + 1, y) -> (1, 0) -> D
- * (x,y) -> (x - 1, y) -> (-1, 0) -> UP
- * */
+// Hard problem...
+/* Takeaways: use the pattern where current length depends on previous
+ * coordinate length rather than using a stack variable which counts the layers
+ * / steps */
