@@ -62,6 +62,8 @@ int main() {
   // Construct the grid, save into monster_q, save start
   std::vector<std::vector<char>> grid(n, std::vector<char>(m));
   std::vector<std::vector<int>> monster_grid(n, std::vector<int>(m, INT_MAX));
+
+  std::pair<int, int> start;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < m; ++j) {
       char tmp;
@@ -74,6 +76,7 @@ int main() {
 
       } else if (tmp == 'A') {
         player_q.emplace(i, j);
+        start = {i, j};
 
         // If we start at boundary, we are done
         if (i == 0 || i == n - 1 || j == 0 || j == m - 1) {
@@ -85,7 +88,7 @@ int main() {
   }
 
   /* Construct monster grid; fill with shortest paths */
-  std::vector<std::vector<char>> parent_dir;
+  std::vector<std::vector<char>> parent_dir(n, std::vector<char>(m, '-'));
   while (!monster_q.empty()) {
     auto [curr_x, curr_y] = monster_q.front();
     monster_q.pop();
@@ -98,7 +101,7 @@ int main() {
         continue;
       }
 
-      if (monster_grid[nx][ny] == INT_MAX) {
+      if (monster_grid[nx][ny] == INT_MAX && grid[nx][ny] != '#') {
         monster_grid[nx][ny] = monster_grid[curr_x][curr_y] + 1;
         monster_q.emplace(nx, ny);
       }
@@ -107,10 +110,13 @@ int main() {
 
   /* Construct player grid */
   int player_step = 1;
-  while (!player_q.empty()) {
+  bool valid_path = false;
+  std::pair<int, int> end;
+
+  while (!player_q.empty() && !valid_path) {
 
     int curr_layer = player_q.size();
-    for (int i = 0; i < curr_layer; ++i) {
+    for (int i = 0; i < curr_layer && !valid_path; ++i) {
 
       auto [curr_x, curr_y] = player_q.front();
       player_q.pop();
@@ -124,16 +130,65 @@ int main() {
           continue;
         }
 
-        if (grid[nx][ny] == '.' && player_step < monster_grid[nx][ny]) {
+        if (grid[nx][ny] != '#' && player_step < monster_grid[nx][ny] &&
+            parent_dir[nx][ny] == '-') {
           player_q.emplace(nx, ny);
 
-          // Save the direction to the parent direction
+          // Save parent directions
+          if (dir[0] == 1 && dir[1] == 0) {
+            parent_dir[nx][ny] = 'D';
+          } else if (dir[0] == -1 && dir[1] == 0) {
+            parent_dir[nx][ny] = 'U';
+          } else if (dir[0] == 0 && dir[1] == 1) {
+            parent_dir[nx][ny] = 'R';
+          } else {
+            parent_dir[nx][ny] = 'L';
+          }
+
+          if (nx == 0 || nx == n - 1 || ny == 0 || ny == m - 1) {
+            valid_path = true;
+            end = {nx, ny};
+            break;
+          }
         }
       }
     }
     player_step++;
   }
 
+  // Return yes or no, and reconstruct path if required
+  if (valid_path) {
+    std::cout << "YES" << std::endl;
+    // Reconstruct path here
+
+    std::pair<int, int> curr = end;
+    std::vector<char> directions;
+    while (curr != start) {
+      char tmp = parent_dir[curr.first][curr.second];
+      directions.push_back(tmp);
+
+      if (tmp == 'D') {
+        curr.first--;
+      } else if (tmp == 'U') {
+        curr.first++;
+      } else if (tmp == 'R') {
+        curr.second--;
+      } else if (tmp == 'L') {
+        curr.second++;
+      }
+    }
+    // print the directions out
+    std::reverse(directions.begin(), directions.end());
+    std::cout << directions.size() << std::endl;
+    for (int i = 0; i < (int)directions.size(); ++i) {
+      std::cout << directions[i];
+    }
+
+  } else {
+    std::cout << "NO" << std::endl;
+  }
+
+  std::cout << std::endl;
   return 0;
 }
 
