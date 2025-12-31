@@ -1,3 +1,22 @@
+#include <stdio.h>
+#include <vector>
+
+void dfs(int curr, std::vector<std::vector<int>> &adj,
+         std::vector<bool> &visited) {
+  // Set current node to visited, and process current node
+  visited[curr] = true;
+  // Code that processes the node
+
+  // Explore neighbours which aren't visited yet
+  for (const int nei : adj[curr]) {
+    if (!visited[nei]) {
+      dfs(nei, adj, visited);
+    }
+  }
+
+  return;
+}
+
 /* Finding number of nodes in its subtree */
 void dfs(int s, int e) {
   count[s] = 1;

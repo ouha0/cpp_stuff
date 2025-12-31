@@ -78,11 +78,21 @@
 
 # Dynamic Programming
 
-## Confident
+## Confidence Levels
 
-## OK
+# Confident
 
-## Rusty Topics
+# OK
+
+- Trie
+- BFS
+- Kahns Topological Sort
+- Divide and Conquer
+- Binary Search
+- Floyd Warshall
+- Two pointers
+
+# Rusty Topics
 
 - Monotonic Queue
 - Circular Queue
