@@ -78,6 +78,10 @@
 
 # Dynamic Programming
 
+## Confident
+
+## OK
+
 ## Rusty Topics
 
 - Monotonic Queue
