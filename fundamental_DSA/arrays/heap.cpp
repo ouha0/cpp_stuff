@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <queue>
 #include <stdio.h>
 #include <vector>
 
@@ -18,6 +19,28 @@
  * Note that lamda functions don't work immediately in the third heap argument.
  * You need to use a struct, or decltype
  * */
+
+/* Some C++ syntax:
+ * std::less is a max heap. The highest priority is the largest element.
+ * std::greater is a min heap. The highest priority is the samllest element.
+ * Less is the default, which is max heap
+ *
+ * */
+
+int main() {
+  /* Default heap definition */
+  std::priority_queue<int> default_max_heap;
+  std::priority_queue<int, std::vector<int>> max_heap;
+  std::priority_queue<int, std::vector<int>, std::greater<int>> min_heap;
+
+  /* Heap with a custom compare function */
+  auto myComp = [](int a, int b) { return a > b; };
+
+  std::priority_queue<int, std::vector<int>, decltype(myComp)> custom_pq(
+      myComp);
+
+  return 0;
+}
 
 class MinHeap {
 private:
