@@ -1,16 +1,17 @@
 # Core / Infamous Questions
 
+Familiarity: Easy, OK, Hard
 
 ## Recursion / DFS (Backtracking)
 Summary: Many problems can be elegantly solved recursively
 
 ### Top Problems
-- 39. Combination Sum
-- 40. Combination Sum II
-- 78. Subsets
-- 90. Subsets II
-- 46. Permutations
-- 47. Permutations II
+- 39. Combination Sum (OK)
+- 40. Combination Sum II (OK)
+- 78. Subsets (Lean Easy)
+- 90. Subsets II (OK)
+- 46. Permutations (Hard)
+- 47. Permutations II (Hard)
 
 ## Graph Traversal (DFS, BFS, Topological Sort, Union Find, Dijkstras (A*), Floyd-Warshall, Kahns Algorithm)
 Summary: BFS goes layer by layer, using a queue, typically finding shortest path.
