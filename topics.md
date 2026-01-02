@@ -91,6 +91,7 @@
 - Binary Search
 - Floyd Warshall
 - Two pointers
+- Heaps
 
 # Rusty Topics
 
