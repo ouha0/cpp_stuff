@@ -18,9 +18,9 @@ Summary: BFS goes layer by layer, using a queue, typically finding shortest path
 DFS goes deep until the leaf node, then backtracks.
 
 ### Top Problems (DFS, BFS)
-- 133. Clone Graph
-- 127. Word Ladder
-- 490. The Maze
+- 133. Clone Graph (OK)
+- 127. Word Ladder (Hard)
+- 490. The Maze (Hard)
 
 ### Top Problems (Dependencies)
 - 210. Course Schedule II
