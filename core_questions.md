@@ -51,22 +51,22 @@ Hash table is most important here. It uses some space, and allows us to reduce t
  ### Top Problems (Hashmap)
 - 242. Valid Anagram (Easy)
 - 133. Clone Graph (Easy)
-- 127. Word Ladder
+- 127. Word Ladder (OK)
 
 ### Top Problems (Stacks / Queues)
-- 155. Min Stack
-- 225. Implement Stack using Queues
+- 155. Min Stack (OK)
+- 225. Implement Stack using Queues (Hard)
 
 ### Top Problems (Heaps)
-- 215. Kth Largest Element in an Array
-- 23. Merge k sorted Lists
+- 215. Kth Largest Element in an Array (OK)
+- 23. Merge k sorted Lists (OK)
 
 ## Linked Lists
 Summary: pointers between nodes. Usually we use a dummy node in the start for simplicity. Common
 problems we get involve deciding whether to use linked lists, or manipulating linked lists
 
-- 237. Delete Node in a Linked List
-- 92. Reverse Linked List II
+- 237. Delete Node in a Linked List (OK)
+- 92. Reverse Linked List II (OK)
 - 876. Middle of the Linked List
 - 143. Reorder List
 
