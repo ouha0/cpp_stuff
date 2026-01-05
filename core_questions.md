@@ -67,27 +67,27 @@ problems we get involve deciding whether to use linked lists, or manipulating li
 
 - 237. Delete Node in a Linked List (OK)
 - 92. Reverse Linked List II (OK)
-- 876. Middle of the Linked List
-- 143. Reorder List
+- 876. Middle of the Linked List (Easy)
+- 143. Reorder List (OK)
 
 ## Pointer Manipulation (2 pointers, sliding windows)
 Summary: we use double pointers to efficiently ignore cases we don't need, and
 consider the next case that may be important
-- 239. Sliding Window Maximum
-- 3. Longest Substring without repeating characters
-- 76. Minimum Window Substring
+- 239. Sliding Window Maximum (Hard)
+- 3. Longest Substring without repeating characters (Easy)
+- 76. Minimum Window Substring (OK)
 
 
 ## Sorting
-- 148. Sort List
+- 148. Sort List (Skipped)
 
 ## Converting Real Life Problem to Code
 Summary: Most questions are not pure algorithmic questions. They will be in the form of a story,
 where you need to decide / propose potential solutions that is best for the problem situation
 
-- 146. LRU Cache
-- 1066. Campus Bike
-- 490. The Maze
+- 146. LRU Cache (Hard)
+- 1066. Campus Bike (Hard)
+- 490. The Maze (OK)
 
 ## Dynamic Programming
 Summary: It is an optimization technique, where we save problems we have already solved
