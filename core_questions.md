@@ -23,33 +23,34 @@ DFS goes deep until the leaf node, then backtracks.
 - 490. The Maze (Hard)
 
 ### Top Problems (Dependencies)
-- 210. Course Schedule II
-- 269. Alien Dictionary
+- 210. Course Schedule II (Intuition: OK)
+- 269. Alien Dictionary (Intuition: Hard)
 
+/* Basic walkthrough for the questions below only */
 
 ## Binary Tree
 Summary: Types of traversals; preorder, inorder, postorder. Typically Divide & Conquer idea
 Idea is to find the middle, and use the middle to determine which reduce the solution set by half
 
 ### Top Problems
-- 94. Binary Tree Inorder Traversal
-- 236. Lowest Common Ancestor of a Binary Tree
-- 297. Serialize and Deserialize Binary Tree
-- 102. Binary Tree Level Order Traversal (BFS)
-- 98. Validate Binary Search Tree
+- 94. Binary Tree Inorder Traversal (Easy)
+- 236. Lowest Common Ancestor of a Binary Tree (Hard)
+- 297. Serialize and Deserialize Binary Tree (Hard)
+- 102. Binary Tree Level Order Traversal (BFS) (Easy)
+- 98. Validate Binary Search Tree (Hard)
 
 ### Top Problems (Divide and Conquer)
-- 34. Find First and Last Position of Element in Sorted Array
-- 162. Find Peak element
-- 69. Sqrt(x)
+- 34. Find First and Last Position of Element in Sorted Array (Easy)
+- 162. Find Peak element (Hard)
+- 69. Sqrt(x) (Easy)
 
 ## Data Structures
 Summary: Hash Table, Queue, Stack, Heap (priority queue)
 Hash table is most important here. It uses some space, and allows us to reduce time complexity by a lot
 
  ### Top Problems (Hashmap)
-- 242. valid Anagram
-- 133. Clone Graph
+- 242. Valid Anagram (Easy)
+- 133. Clone Graph (Easy)
 - 127. Word Ladder
 
 ### Top Problems (Stacks / Queues)
